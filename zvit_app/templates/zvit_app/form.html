@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Генерація звіту / розпорядження</title>
+
+  <!-- Bootstrap -->
+  <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'datepicker/bootstrap-datepicker.min.css' %}" rel="stylesheet">
+
+  <style>
+    body { background-color: #f9fafb; }
+    .form-card { background: #fff; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1); padding: 2rem; margin-top: 2rem; }
+    .section-title { background-color: #e9f3ff; padding: 0.6rem 1rem; border-radius: 0.5rem; margin-top: 2rem; font-weight: 600; color: #0d6efd; }
+    table input, table select, table textarea { width: 100%; }
+    .datepicker-dropdown { z-index: 2000 !important; }
+    .manual-add-wrapper { margin-top: 0.3rem; display: flex; gap: 0.3rem; }
+    .manual-add-wrapper input { flex: 1; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="form-card">
+    <h2 class="mb-4 text-center text-primary"><i class="bi bi-file-earmark-text"></i> Генерація документів</h2>
+
+    <form method="POST" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <!-- ЗВІТ -->
+      <div class="section-title"><i class="bi bi-journal-text"></i> Розділ "Звіт"</div>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <tbody>
+            <tr><th>{{ form.num.label_tag }}</th><td>{{ form.num }}</td></tr>
+            <tr><th>{{ form.date.label_tag }}</th><td>{{ form.date }}</td></tr>
+            <tr><th>{{ form.object.label_tag }}</th><td>{{ form.object }}</td></tr>
+            <tr><th>{{ form.sphere.label_tag }}</th><td>{{ form.sphere }}</td></tr>
+            <tr><th>{{ form.zvit_members.label_tag }}</th><td>{{ form.zvit_members }}</td></tr>
+            <tr><th>{{ form.responsible.label_tag }}</th><td>{{ form.responsible }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- РОЗПОРЯДЖЕННЯ -->
+      <div class="section-title"><i class="bi bi-file-earmark-check"></i> Розділ "Розпорядження"</div>
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+          <tbody>
+            <tr><th>{{ form.rozp_members.label_tag }}</th><td>{{ form.rozp_members }}</td></tr>
+            <tr><th>{{ form.date_rozp.label_tag }}</th><td>{{ form.date_rozp }}</td></tr>
+            <tr><th>{{ form.leader.label_tag }}</th><td>{{ form.leader }}</td></tr>
+            <tr><th>{{ form.leader_oi.label_tag }}</th><td>{{ form.leader_oi }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Кнопки -->
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-circle"></i> Створити документи</button>
+        <button type="reset" class="btn btn-outline-secondary px-4"><i class="bi bi-arrow-counterclockwise"></i> Очистити</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="{% static 'jquery/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'datepicker/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'datepicker/bootstrap-datepicker.uk.js' %}"></script>
+
+<script>
+$(function() {
+  // Datepicker
+  ['#id_date','#id_date_rozp'].forEach(function(sel){
+    $(sel).attr('type','text').datepicker({
+      format:'dd.mm.yyyy', language:'uk', autoclose:true,
+      todayHighlight:true, orientation:"bottom", container:'body'
+    }).focus(function(){ $(this).datepicker('show'); });
+  });
+
+  // Универсальная функция ручного добавления в select
+  function enableManualAdd(selectIds){
+    selectIds.forEach(function(id){
+      const $select = $(id);
+      const $wrapper = $('<div class="manual-add-wrapper"></div>');
+      const $input = $('<input type="text" class="form-control form-control-sm" placeholder="Додати вручну...">');
+      const $btn = $('<button type="button" class="btn btn-outline-success btn-sm"><i class="bi bi-plus-circle"></i></button>');
+      $wrapper.append($input).append($btn);
+      $select.after($wrapper);
+
+      $btn.on('click', function(){
+        const val = $input.val().trim();
+        if(val){
+          if(!$select.find('option[value="'+val+'"]').length){
+            $select.append($('<option>', {value:val, text:val, selected:true}));
+          } else {
+            $select.find('option[value="'+val+'"]').prop('selected', true);
+          }
+          $input.val('');
+        }
+      });
+
+      $input.on('keypress', function(e){
+        if(e.which===13){ e.preventDefault(); $btn.click(); }
+      });
+    });
+  }
+
+  // Поля с возможностью ручного добавления
+  enableManualAdd([
+    '#id_zvit_members',
+    '#id_rozp_members',
+    '#id_responsible',
+    '#id_leader',
+    '#id_leader_oi'
+  ]);
+});
+</script>
+</body>
+</html>
