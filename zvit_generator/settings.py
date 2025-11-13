@@ -1,16 +1,20 @@
 from pathlib import Path
 
-
-#STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-
 # Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Безопасность
 SECRET_KEY = "replace-me-with-a-secure-key"
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+DEBUG = False  # ❗ На Azure лучше False
+ALLOWED_HOSTS = [
+    'zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
+    'localhost',
+    '127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
+]
 
 # Приложения
 INSTALLED_APPS = [
@@ -26,6 +30,10 @@ INSTALLED_APPS = [
 # Middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+
+    # ✅ ВАЖНО: WhiteNoise должен идти сразу после SecurityMiddleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -41,7 +49,7 @@ ROOT_URLCONF = "zvit_generator.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "zvit_app" / "templates"],  # Папка с шаблонами приложения
+        "DIRS": [BASE_DIR / "zvit_app" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -57,7 +65,7 @@ TEMPLATES = [
 # WSGI
 WSGI_APPLICATION = "zvit_generator.wsgi.application"
 
-# База данных
+# База данных (SQLite — ок для Azure free tier)
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -74,34 +82,13 @@ TIME_ZONE = "Europe/Kyiv"
 USE_I18N = True
 USE_TZ = True
 
-# ⚙️ Статика — важно для Bootstrap, JS и CSS
+# ⚙️ Статика — ключевые настройки
 STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "zvit_app" / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Добавляем путь к папке, где будут лежать Bootstrap, jQuery, Icons, Datepicker
-STATICFILES_DIRS = [
-    BASE_DIR / "zvit_app" / "static",
-]
+# ✅ Включаем WhiteNoise для Azure (вместе с collectstatic)
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Авто-поле по умолчанию
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# Куда собирать статические файлы (Bootstrap, JS, CSS и т.п.)
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-
-
-
-
- 
-
-#  DEBUG = False  # для продакшн
-
-ALLOWED_HOSTS = [
-    'zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
-    'localhost',
-    '127.0.0.1',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
-]
