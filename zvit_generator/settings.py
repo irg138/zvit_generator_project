@@ -88,7 +88,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 
- settings.py
+ 
 
 #  DEBUG = False  # для продакшн
 
