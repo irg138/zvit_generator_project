@@ -84,3 +84,20 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Куда собирать статические файлы (Bootstrap, JS, CSS и т.п.)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
+
+
+
+ settings.py
+
+#  DEBUG = False  # для продакшн
+
+ALLOWED_HOSTS = [
+    'zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
+    'localhost',
+    '127.0.0.1',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://zvit-generator-h2f7fvhfd3fwawbv.westeurope-01.azurewebsites.net',
+]
