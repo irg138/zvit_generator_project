@@ -1,5 +1,9 @@
 from pathlib import Path
 
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
 # Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
