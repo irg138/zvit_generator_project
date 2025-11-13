@@ -1,6 +1,11 @@
+
+
+
 import os
 from django.core.wsgi import get_wsgi_application
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zvit_generator.settings')
+from whitenoise import WhiteNoise
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zvit_generator_project.settings')
+
 application = get_wsgi_application()
-
-
+application = WhiteNoise(application, root=os.path.join(os.path.dirname(__file__), 'staticfiles'))
